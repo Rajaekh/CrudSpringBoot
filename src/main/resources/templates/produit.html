@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
+	<meta name="keywords" content="" />
+	<meta name="author" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="description" content="Zenix - Crypto Admin Dashboard" />
+	<meta property="og:title" content="Zenix - Crypto Admin Dashboard" />
+	<meta property="og:description" content="Zenix - Crypto Admin Dashboard" />
+	<meta property="og:image" content="https://zenix.dexignzone.com/xhtml/social-image.png" />
+	<meta name="format-detection" content="telephone=no">
+	<title>Zenix - Crypto Admin Dashboard </title>
+	<!-- Favicon icon -->
+	<link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
+	<link rel="stylesheet" href="./vendor/chartist/css/chartist.min.css">
+	<link href="./vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+	<link href="./vendor/owl-carousel/owl.carousel.css" rel="stylesheet">
+	<link href="./css/styleBack.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+
+
+	<div class=" container mt-5">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-start mb-5 card-header">
+					<button type="button" class="btn btn-primary " data-toggle="modal" data-target="#exampleModal"
+						data-whatever="@getbootstrap">Add Patient</button>
+					<form  th:action="@{index}" method="get"  class="ml-5" >
+
+						<input type="search" placeholder="Search" name="keyword">
+						<button class="btn btn-info" type="submit"  size="50"
+							 required>Search</button>
+</form>
+				</div>
+				
+				<table class="table  m-auto ">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Nom du produit </th>
+							<th scope="col">Prix </th>
+							<th scope="col">Date de production</th>
+							<th scope="col">Date d Expration</th>
+							<th scope="col">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<tr th:each="p:${data}">
+							<th th:text="${p.id}"></th>
+							<td th:text="${p.nom}"></td>
+							<td th:text="${p.prix}+ DH"></td>
+							<td th:text="${p.dateproduction}"></td>
+							<td th:text="${p.dateexperation}"></td>
+
+							<td>
+								<a th:href="@{/findByid(id=${p.id})}"
+									class="btn btn-success btnedit text-light">Edit</a>
+								<a class="btn btn-danger text-light delBtn" th:href="@{deletep(id=${p.id},page=${currentPage},keyword=${keyword})}">Delete</a>
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+
+
+			</div>
+			<div class="d-flex justify-content-start  ml-4">
+
+				<div class="mt-2 mr-1">
+					Total items :[[${totalitems}]] Page [[${currentPage}]] of [[${totalpage}]]
+				</div>&nbsp;
+				<nav aria-label="Page navigation example">
+					<ul class="pagination">
+
+						<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+						<span th:each="page,status:${pages}">
+						<li class="page-item " ><a class="page-link" th:href="@{index(page=${status.index},keyword=${keyword})}">[[${status.index}]]</a></li> 
+						</span>
+						<li class="page-item"><a class="page-link" href="#">Next</a></li>
+					</ul>
+				</nav>
+				<!--<span th:each="i:${#numbers.sequence(1,totalpage)}">
+				<span>[[${i}]]</span>&nbsp;&nbsp;
+				</span>-->
+			</div>
+
+		</div>
+
+
+
+
+		<!--Modal pour ajouter des produit -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">New message</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" th:action="@{add}">
+							<div class="form-group">
+								<label for="nom" class="col-form-label">Nom du produit</label>
+								<input type="text" class="form-control" id="nom" name="nom">
+							</div>
+							<div class="form-group">
+								<label for="prenom" class="col-form-label">Prix:</label>
+								<input type="text" class="form-control" id="prix" name="prix">
+							</div>
+							<div class="form-group">
+								<label for="dateNaissance" class="col-form-label">Date de production:</label>
+								<input type="date" class="form-control" id="dateproduction" name="dateproduction">
+							</div>
+
+							<div class="form-group">
+								<label for="dateNaissance" class="col-form-label">Date d'Expiration:</label>
+								<input type="date" class="form-control" id="dateexperation" name="dateexperation">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">save</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-6">
+
+		</div>
+
+		<div class="col-6">
+
+		</div>
+
+
+
+
+
+		<!--#Modal form for user update-->
+		<div class="FormUpdate">
+
+			<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel"
+				aria-hidden="true">
+
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="updateModalLabel">Update User</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+
+							<form method="post" th:action="@{update}">
+								<div class="form-group">
+									<label for="nom" class="col-form-label">#</label>
+									<input type="text" class="form-control" id="id" name="id">
+								</div>
+								<div class="form-group">
+									<label for="nom" class="col-form-label">Nom Produit</label>
+									<input type="text" class="form-control" id="nom" name="nom">
+								</div>
+								<div class="form-group">
+									<label for="prenom" class="col-form-label">Prix du produit:</label>
+									<input type="text" class="form-control" id="prix" name="prix">
+								</div>
+								<div class="form-group">
+									<label for="dateNaissance" class="col-form-label">Date de production:</label>
+									<input type="date" class="form-control" id="dateproduction" name="dateproduction">
+								</div>
+
+								<div class="form-group">
+									<label for="dateNaissance" class="col-form-label">Date d'Expiration:</label>
+									<input type="date" class="form-control" id="dateexperation" name="dateexperation">
+								</div>
+
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-primary">save</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!-- #Modal for removing users -->
+		<div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog"
+			aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="removeModalCenterTitle">Alert message</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p class="alert alert-danger">
+							Are You sure You want to delete this User?
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<a href="" class="btn btn-danger " id="delRef">Delete</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+		<!-- Required vendors -->
+		<script src="./vendor/global/global.min.js"></script>
+		<script src="./vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+		<!-- Datatable -->
+		<script src="./vendor/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="./js/plugins-init/datatables.init.js"></script>
+		<script src="./js/custom.min.js"></script>
+		<script src="./js/deznav-init.js"></script>
+		<script>
+			$("document").ready(function () {
+				$('.btnedit').on('click', function (event) {
+					event.preventDefault();
+					var href = $(this).attr('href');
+					$.get(href, function (p, status) {
+						$('.FormUpdate #id').val(p.id);
+						$('.FormUpdate #nom').val(p.nom);
+						$('.FormUpdate #prix').val(p.prix);
+						$('.FormUpdate #dateproduction').val(p.dateproduction);
+						$('.FormUpdate #dateexperation').val(p.dateexperation);
+						$('.FormUpdate #updateModal').modal();
+					});
+
+
+				});
+				$('.table .delBtn').on('click', function (event) {
+					event.preventDefault();
+					var href = $(this).attr('href');
+					$('#removeModalCenter #delRef').attr('href', href);
+					$('#removeModalCenter').modal();
+				});
+
+			});
+		</script>
+
+</body>
+
+</html>
